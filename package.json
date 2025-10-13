@@ -1,10 +1,11 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "\"# ecommerce-escalavel-inteligente-Compass.UOL\"  \r #\u0000 \u0000e\u0000c\u0000o\u0000m\u0000m\u0000e\u0000r\u0000c\u0000e\u0000-\u0000e\u0000s\u0000c\u0000a\u0000l\u0000a\u0000v\u0000e\u0000l\u0000-\u0000i\u0000n\u0000t\u0000e\u0000l\u0000i\u0000g\u0000e\u0000n\u0000t\u0000e\u0000-\u0000C\u0000o\u0000m\u0000p\u0000a\u0000s\u0000s\u0000.\u0000U\u0000O\u0000L\u0000\r\u0000 \u0000",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -25,5 +26,6 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "moongose": "^1.0.0"
-  }
+  },
+  "devDependencies": {}
 }
