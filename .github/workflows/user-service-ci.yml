@@ -1,0 +1,99 @@
+name: CI/CD do Serviço de Usuários
+
+# Gatilhos: Roda em todo 'push' e 'pull request' para a branch principal
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'user-service/**' # O pipeline só roda se o código em 'user-service' mudar
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'user-service/**'
+
+# Define o conjunto de trabalhos
+jobs:
+  build_test_and_scan:
+    runs-on: ubuntu-latest
+    
+    # Define as etapas do pipeline
+    steps:
+      - name: Checkout do Código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Navega para o diretório do microserviço
+      - name: Instalar Dependências
+        run: |
+          cd user-service
+          npm install
+
+      # ===============================================
+      # ETAPA 1: VALIDAÇÕES DE SEGURANÇA (DevSecOps)
+      # ===============================================
+      
+      - name: 1.1 Análise de Credenciais (Gitleaks)
+        # Verifica se há segredos vazados no seu código
+        uses: gitleaks/gitleaks-action@v2
+        
+      - name: 1.2 Análise de Vulnerabilidades de Dependências (npm audit)
+        # Garante que as dependências não têm vulnerabilidades conhecidas (SCA)
+        run: |
+          cd user-service
+          # Define que o build falhará se houver vulnerabilidades de nível alto ou crítico
+          npm audit --audit-level=high 
+
+      - name: 1.3 Análise Estática de Código (Semgrep - SAST)
+        # Varre o código Node.js em busca de padrões inseguros (SQL Injection, etc.)
+        uses: returntocorp/semgrep-action@v1
+        with:
+          target: user-service # Diretório a ser analisado
+          
+      # ===============================================
+      # ETAPA 2: TESTES E BUILD (CI)
+      # ===============================================
+      
+      - name: 2.1 Rodar Testes Unitários e de Integração
+        # Supondo que você tem um script 'test' no package.json
+        run: |
+          cd user-service
+          npm test
+
+      - name: 2.2 Build e Tag da Imagem Docker (Preparação para CD)
+        uses: docker/build-push-action@v5
+        with:
+          context: ./user-service
+          push: false # Apenas constrói, o push para o ECR é feito na etapa 'deploy'
+          tags: user-service:${{ github.sha }} # Usa o SHA do commit como tag
+          
+  # ===============================================
+  # ETAPA 3: DEPLOY (CD) - Para a equipe de Infra
+  # ===============================================
+  deploy_to_aws:
+    name: Deploy no AWS
+    runs-on: ubuntu-latest
+    needs: build_test_and_scan # Garante que o deploy só roda se todas as verificações passarem
+    environment: Production # Define o ambiente de deploy
+    if: github.ref == 'refs/heads/main' # Só deploya no commit final para 'main'
+    
+    steps:
+      - name: Configurar Credenciais AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} # Segredos do GitHub
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1 # Configure sua região
+
+      - name: Deploy com Terraform Apply
+        # A equipe de Infra faria o 'apply' aqui, utilizando o código Terraform
+        # que provisiona o ECS/Lambda e o CloudWatch.
+        run: |
+          echo "Processo de deploy do user-service via Terraform (Infra)"
+          # Exemplo: terraform init && terraform plan && terraform apply -auto-approve
+          echo "Deploy bem-sucedido!"
