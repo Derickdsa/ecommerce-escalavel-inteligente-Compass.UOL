@@ -1,6 +1,6 @@
-- 🛒 Desafio 4: Plataforma eCommerce Escalável e Inteligente (AWS & Compass UOL)
+## 🛒 Desafio 4: Plataforma eCommerce Escalável e Inteligente (AWS & Compass UOL)
 
-- 🎯 Objetivo do Projeto desenvolvido como parte do Desafio 4 - AI Services - AWS & Compass UOL.
+🎯 Objetivo do Projeto desenvolvido como parte do Desafio 4 - AI Services - AWS & Compass UOL.
 O objetivo é criar uma plataforma de eCommerce robusta, segura e inteligente, utilizando arquitetura cloud-native, DevSecOps e Inteligência Artificial Generativa (GenAI).
 
 Desenvolver uma aplicação completa de eCommerce com múltiplos módulos:
