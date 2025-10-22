@@ -6,10 +6,10 @@ variable "variable-uol" {
 }
 
 # Variável para a região AWS
-variable "variable-region" {
+variable "availability_zones" {
     description = "AWS region"
-    type        = string
-    default     = "us-east-1, us-east-2" # usando duas regiões para alta disponibilidade
+    type        = list(string)
+    default     = ["us-east-1a", "us-east-1b"]
 }
 
 # Bloco CIDR da VPC
